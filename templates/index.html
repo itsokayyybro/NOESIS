@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Learning Checkpoints</h1>
+            <p class="subtitle">Describe your problem and get a concise set of implementation steps.</p>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form class="problem-input-section" method="POST" action="{{ url_for('generate') }}" enctype="multipart/form-data">
+            <label for="problem-input">What do you want to build?</label>
+            <textarea id="problem-input" name="problem"
+                      placeholder="Example: Build a URL shortener; it should create unique short codes, store mappings, and support redirects."
+                      rows="7" required></textarea>
+
+            <div class="example-tags">
+                <button type="button" class="pill" data-example="Build a URL shortener that stores URL mappings and returns short codes.">URL Shortener</button>
+                <button type="button" class="pill" data-example="Create a calculator API that supports add, subtract, multiply, divide with error handling.">Calculator API</button>
+                <button type="button" class="pill" data-example="Build a todo list manager with create/read/update/delete tasks and priorities.">Todo Manager</button>
+            </div>
+
+            <div class="reference-context">
+                <div class="file-row">
+                    <label for="context-file">Upload context (.txt, .md, .ipynb, .json, .pdf)</label>
+                    <input type="file" id="context-file" name="context_file" accept=".txt,.md,.ipynb,.json,.pdf">
+                </div>
+                <p class="helper-text">If no file is uploaded, we use the backend corpus. Uploaded files ground this request.</p>
+            </div>
+
+            <button type="submit" class="primary-btn">Generate Checkpoints</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('.pill').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.getElementById('problem-input').value = btn.dataset.example;
+            });
+        });
+    </script>
+</body>
+</html>

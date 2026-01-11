@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor - Checkpoint {{ checkpoint_id + 1 }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container editor-container">
+        <header>
+            <h1>Checkpoint {{ checkpoint_id + 1 }}: {{ checkpoint.title }}</h1>
+            <a href="/checkpoints/{{ session_id }}" class="btn secondary-btn">Back to Checkpoints</a>
+        </header>
+
+        <div class="editor-layout">
+            <div class="instructions-panel">
+                <h2>Instructions</h2>
+                
+                <div class="instruction-section">
+                    <h3>Objective</h3>
+                    <p>{{ checkpoint.objective }}</p>
+                </div>
+
+                <div class="instruction-section">
+                    <h3>Concept to Learn</h3>
+                    <p>{{ checkpoint.concept }}</p>
+                </div>
+
+                <div class="instruction-section">
+                    <h3>Function Signature</h3>
+                    <pre><code>{{ checkpoint.function_signature }}</code></pre>
+                </div>
+
+                <div class="instruction-section">
+                    <h3>Requirements</h3>
+                    <ul>
+                        {% for rule in checkpoint.rules %}
+                        <li>{{ rule }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="instruction-section">
+                    <h3>Expected Behavior</h3>
+                    <p>{{ checkpoint.expected_output }}</p>
+                </div>
+
+                {% if checkpoint.hints %}
+                <div class="instruction-section hints">
+                    <h3>Hints</h3>
+                    <ul>
+                        {% for hint in checkpoint.hints %}
+                        <li>{{ hint }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="code-panel">
+                <div class="code-header">
+                    <h2>Your Code</h2>
+                    <button id="submit-btn" class="primary-btn">Submit for Validation</button>
+                </div>
+
+                <textarea id="code-editor" 
+                          placeholder="Write your implementation here...&#10;&#10;def your_function():&#10;    pass">{{ previous_code }}</textarea>
+
+                <div id="validation-result" class="validation-result hidden">
+                    <div class="result-header">
+                        <span class="result-icon"></span>
+                        <span class="result-title"></span>
+                    </div>
+                    <div class="result-message"></div>
+                    <div class="result-details"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = '{{ session_id }}';
+        const checkpointId = { checkpoint_id };
+
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            const code = document.getElementById('code-editor').value;
+            const submitBtn = document.getElementById('submit-btn');
+            const resultDiv = document.getElementById('validation-result');
+
+            if (!code.trim()) {
+                alert('Please write some code first!');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Validating...';
+            resultDiv.classList.add('hidden');
+
+            try {
+                const response = await fetch('/submit_code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        checkpoint_id: checkpointId,
+                        code: code
+                    })
+                });
+
+                const result = await response.json();
+                displayResult(result);
+            } catch (error) {
+                alert('Error submitting code. Please try again.');
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit for Validation';
+            }
+        });
+
+        function displayResult(result) {
+            const resultDiv = document.getElementById('validation-result');
+            const icon = resultDiv.querySelector('.result-icon');
+            const title = resultDiv.querySelector('.result-title');
+            const message = resultDiv.querySelector('.result-message');
+            const details = resultDiv.querySelector('.result-details');
+
+            resultDiv.classList.remove('hidden', 'success', 'error');
+
+            if (result.passed) {
+                resultDiv.classList.add('success');
+                icon.textContent = '✅';
+                title.textContent = 'Checkpoint Passed!';
+                message.textContent = result.message;
+                details.innerHTML = '<p><strong>Next:</strong> Proceed to the next checkpoint</p>';
+                
+                setTimeout(() => {
+                    if (confirm('Great job! Ready to move to the next checkpoint?')) {
+                        window.location.href = `/checkpoints/${sessionId}`;
+                    }
+                }, 1500);
+            } else {
+                resultDiv.classList.add('error');
+                icon.textContent = '❌';
+                title.textContent = 'Not Quite Right';
+                message.textContent = result.message;
+                
+                let detailsHTML = '<div class="feedback-list">';
+                if (result.hints && result.hints.length > 0) {
+                    detailsHTML += '<h4>Hints to improve:</h4><ul>';
+                    result.hints.forEach(hint => {
+                        detailsHTML += `<li>${hint}</li>`;
+                    });
+                    detailsHTML += '</ul>';
+                }
+                detailsHTML += '</div>';
+                details.innerHTML = detailsHTML;
+            }
+
+            resultDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

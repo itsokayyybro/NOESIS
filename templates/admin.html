@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Ingestion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Upload Context</h1>
+            <p class="subtitle">Drop files into the repo (data/context_sources) or upload here to rebuild the store.</p>
+        </header>
+
+        {% if message %}
+        <div class="alert info">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="alert error">{{ error }}</div>
+        {% endif %}
+
+        <form class="problem-input-section" method="POST" action="{{ url_for('admin_context') }}" enctype="multipart/form-data">
+            <label for="context-name">Source name</label>
+            <input type="text" id="context-name" name="context_name" placeholder="e.g., CS101 Syllabus" required>
+
+            <div class="file-row">
+                <label for="context-file">Upload context (.txt, .md, .ipynb, .json, .pdf)</label>
+                <input type="file" id="context-file" name="context_file" accept=".txt,.md,.ipynb,.json,.pdf" required>
+            </div>
+
+            <button type="submit" class="primary-btn">Ingest Context</button>
+        </form>
+
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="secondary-btn">Back to generator</a>
+        </div>
+    </div>
+</body>
+</html>

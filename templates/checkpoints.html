@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkpoints</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Generated Checkpoints</h1>
+            <p class="subtitle">{{ problem }}</p>
+        </header>
+
+        {% if error %}
+        <div class="alert error">{{ error }}</div>
+        {% endif %}
+
+        {% if retrieval_chunks %}
+        <div class="alert info">
+            <strong>Grounded on your context (top {{ retrieval_chunks|length }} chunks)</strong>
+            <ul class="retrieval-list">
+                {% for chunk in retrieval_chunks %}
+                <li>
+                    <div>
+                        <span class="badge">#{{ chunk.rank }}</span>
+                        <span class="score">score {{ '%.3f'|format(chunk.score) }}</span>
+                        {% if chunk.source %}
+                        <span class="source">{{ chunk.source }}</span>
+                        {% endif %}
+                    </div>
+                    <pre>{{ chunk.text | truncate(600, True, '...') }}</pre>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% elif retrieved_context %}
+        <div class="alert info">
+            <strong>Grounded on your context</strong>
+            <pre>{{ retrieved_context | truncate(1200, True, '...') }}</pre>
+        </div>
+        {% endif %}
+
+        {% if not checkpoints %}
+        <p class="empty-state">No checkpoints to show yet.</p>
+        {% else %}
+        <div class="checkpoints-list">
+            {% for checkpoint in checkpoints %}
+            <div class="checkpoint-card">
+                <div class="checkpoint-header">
+                    <span class="checkpoint-number">Checkpoint {{ loop.index }}</span>
+                    <label class="checkbox">
+                        <input type="checkbox"> Mark complete
+                    </label>
+                </div>
+
+                <h3>{{ checkpoint.title }}</h3>
+                <p class="checkpoint-objective">{{ checkpoint.objective }}</p>
+
+                <div class="checkpoint-details">
+                    <p><strong>Concept:</strong> {{ checkpoint.concept }}</p>
+                    {% if checkpoint.function_signature %}
+                    <p><strong>Function:</strong> <code>{{ checkpoint.function_signature }}</code></p>
+                    {% endif %}
+                    {% if checkpoint.validation_type %}
+                    <p><strong>Validation:</strong> {{ checkpoint.validation_type }}</p>
+                    {% endif %}
+                </div>
+
+                {% if checkpoint.rules %}
+                <div class="list-block">
+                    <strong>Rules</strong>
+                    <ul>
+                        {% for item in checkpoint.rules %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if checkpoint.hints %}
+                <div class="list-block">
+                    <strong>Hints</strong>
+                    <ul>
+                        {% for item in checkpoint.hints %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if checkpoint.test_inputs %}
+                <div class="list-block">
+                    <strong>Test Inputs</strong>
+                    <pre>{{ checkpoint.test_inputs | tojson(indent=2) }}</pre>
+                </div>
+                {% endif %}
+
+                {% if checkpoint.expected_outputs %}
+                <div class="list-block">
+                    <strong>Expected Outputs</strong>
+                    <pre>{{ checkpoint.expected_outputs | tojson(indent=2) }}</pre>
+                </div>
+                {% endif %}
+
+                {% if checkpoint.expected_output %}
+                <p class="checkpoint-objective"><strong>Expected Behavior:</strong> {{ checkpoint.expected_output }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <a href="/" class="secondary-btn">Start a new request</a>
+        </div>
+    </div>
+</body>
+</html>
