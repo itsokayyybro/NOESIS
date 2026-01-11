@@ -3,38 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Context Ingestion</title>
+    <title>Admin | Noesis</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="ambient-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>Upload Context</h1>
-            <p class="subtitle">Drop files into the repo (data/context_sources) or upload here to rebuild the store.</p>
+        <nav class="nav-bar">
+            <a href="/" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="var(--accent)" stroke-width="2"/>
+                    <path d="M12 6v6l4 2" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>Noesis</span>
+            </a>
+            <a href="/" class="btn-secondary" style="padding: 8px 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back
+            </a>
+        </nav>
+
+        <header style="text-align: left; padding: 40px 0 32px;">
+            <div class="hero-badge">Admin Console</div>
+            <h1 style="font-size: 2rem;">Knowledge Base</h1>
+            <p class="subtitle" style="text-align: left; margin: 0;">Ingest internal documentation to power contextual learning</p>
         </header>
 
         {% if message %}
-        <div class="alert info">{{ message }}</div>
+        <div class="alert alert-success" style="margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>{{ message }}</span>
+        </div>
         {% endif %}
+
         {% if error %}
-        <div class="alert error">{{ error }}</div>
+        <div class="alert alert-danger" style="margin-bottom: 24px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <span>{{ error }}</span>
+        </div>
         {% endif %}
 
-        <form class="problem-input-section" method="POST" action="{{ url_for('admin_context') }}" enctype="multipart/form-data">
-            <label for="context-name">Source name</label>
-            <input type="text" id="context-name" name="context_name" placeholder="e.g., CS101 Syllabus" required>
-
-            <div class="file-row">
-                <label for="context-file">Upload context (.txt, .md, .ipynb, .json, .pdf)</label>
-                <input type="file" id="context-file" name="context_file" accept=".txt,.md,.ipynb,.json,.pdf" required>
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <h2>Upload Document</h2>
             </div>
+            
+            <form method="POST" action="{{ url_for('admin_context') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="context-name">Document Name</label>
+                    <input type="text" id="context-name" name="context_name" 
+                           placeholder="e.g., Engineering Handbook 2024" required>
+                </div>
 
-            <button type="submit" class="primary-btn">Ingest Context</button>
-        </form>
+                <div class="form-group">
+                    <label>Upload File</label>
+                    <div class="file-drop-zone" id="dropZone">
+                        <input type="file" id="context-file" name="context_file" 
+                               accept=".txt,.md,.ipynb,.json,.pdf" required>
+                        <div class="drop-content">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            <span class="drop-text">Drop your file here or <em>browse</em></span>
+                            <span class="drop-hint">.txt, .md, .pdf, .json, .ipynb</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="actions">
-            <a href="{{ url_for('index') }}" class="secondary-btn">Back to generator</a>
+                <button type="submit" class="btn-primary" style="width: 100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Ingest Document
+                </button>
+            </form>
+        </div>
+
+        <div class="info-card" style="margin-top: 24px;">
+            <div class="info-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </div>
+            <div>
+                <h4>How it works</h4>
+                <p>Documents are processed, chunked, and indexed for semantic retrieval. When users create learning paths, relevant context is automatically retrieved to ground the AI-generated modules in your organization's specific knowledge.</p>
+            </div>
         </div>
     </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('context-file');
+
+        ['dragenter', 'dragover'].forEach(e => {
+            dropZone.addEventListener(e, (evt) => {
+                evt.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, (evt) => {
+                evt.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            fileInput.files = e.dataTransfer.files;
+            updateFileDisplay();
+        });
+
+        fileInput.addEventListener('change', updateFileDisplay);
+
+        function updateFileDisplay() {
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                dropZone.querySelector('.drop-text').innerHTML = '<strong>' + fileName + '</strong>';
+                dropZone.classList.add('has-file');
+            }
+        }
+    </script>
 </body>
 </html>
