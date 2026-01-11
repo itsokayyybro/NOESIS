@@ -140,10 +140,10 @@ NOESIS/
 
 This project was developed by a talented team of developers:
 
-- **Your Name** - Project Lead & Backend Development
-- **OM** - AI Integration & RAG Implementation  
-- **Jeet** - Frontend Development & UI/UX
-- **Prince** - DevOps & Deployment
+- **OM** - Project Lead & RAG Implementation
+- **Jeet** - AI Integration & Backend Development  
+- **Prince** - Frontend Development & UI/UX
+- **Darshan** - DevOps & Deployment
 
 ## 📝 License
 
