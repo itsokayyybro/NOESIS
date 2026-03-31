@@ -9,7 +9,7 @@ An AI-powered learning platform that generates personalized learning modules tai
 
 NOESIS transforms the way organizations approach technical training by creating adaptive learning paths grounded in real codebases, internal documentation, and industry best practices. Instead of generic tutorials, learners receive contextual, company-specific modules that accelerate onboarding and skill development.
 
-**Live Demo:** [https://noesis-1kyo.onrender.com/](https://noesis-1kyo.onrender.com/)
+**Live Demo:** [https://noesis-smr8.onrender.com/](https://noesis-smr8.onrender.com/)
 
 ## ✨ Key Features
 
